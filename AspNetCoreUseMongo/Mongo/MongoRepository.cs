@@ -7,6 +7,7 @@ namespace AspNetCoreUseMongo.Mongo
 {
     public class MongoRepository<T> where T : class, new()
     {
+        // https://mongodb.github.io/mongo-csharp-driver/2.0/reference/driver/connecting/#re-use
         private readonly MongoOptions _options;
         private static IMongoClient _mongoClient;
         private static IMongoDatabase _mongoDatabase;
@@ -37,16 +38,19 @@ namespace AspNetCoreUseMongo.Mongo
 
         public void Insert(T document)
         {
+            this.GetCollection(document).InsertOne(document);
+        }
+
+        private IMongoCollection<T> GetCollection(T document)
+        {
             if (_mongoCollections.TryGetValue(document.GetType().TypeHandle, out IMongoCollection<T> collection))
             {
-                collection.InsertOne(document);
+                return collection;
             }
-            else
-            {
-                collection = _mongoDatabase.GetCollection<T>(typeof(T).Name);
-                _mongoCollections.TryAdd(document.GetType().TypeHandle, collection);
-                collection.InsertOne(document);
-            }
+
+            collection = _mongoDatabase.GetCollection<T>(typeof(T).Name);
+            _mongoCollections.TryAdd(document.GetType().TypeHandle, collection);
+            return collection;
         }
     }
 }
