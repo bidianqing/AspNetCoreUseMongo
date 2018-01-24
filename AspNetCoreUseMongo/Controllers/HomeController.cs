@@ -1,25 +1,13 @@
 ﻿using AspNetCoreUseMongo.Models;
-using AspNetCoreUseMongo.Mongo;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Diagnostics;
 
 namespace AspNetCoreUseMongo.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly MongoRepository<User> _userMongoRepository;
-        public HomeController(MongoRepository<User> userMongoRepository)
-        {
-            _userMongoRepository = userMongoRepository;
-        }
-
         public IActionResult Index()
         {
-            _userMongoRepository.Insert(new Models.User
-            {
-                CreateTime = DateTime.Now
-            });
             return View();
         }
 

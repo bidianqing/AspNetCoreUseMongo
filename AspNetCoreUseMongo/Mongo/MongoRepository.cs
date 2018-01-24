@@ -2,12 +2,13 @@
 using MongoDB.Driver;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace AspNetCoreUseMongo.Mongo
 {
     public class MongoRepository<T> where T : class, new()
     {
-        // https://mongodb.github.io/mongo-csharp-driver/2.0/reference/driver/connecting/#re-use
+        // https://mongodb.github.io/mongo-csharp-driver/2.0/reference/driver/connecting/
         private readonly MongoOptions _options;
         private static IMongoClient _mongoClient;
         private static IMongoDatabase _mongoDatabase;
@@ -39,6 +40,10 @@ namespace AspNetCoreUseMongo.Mongo
         public void Insert(T document)
         {
             this.GetCollection(document).InsertOne(document);
+        }
+        public List<T> Find(T document)
+        {
+            return this.GetCollection(document).AsQueryable().ToList();
         }
 
         private IMongoCollection<T> GetCollection(T document)

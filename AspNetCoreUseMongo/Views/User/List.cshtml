@@ -1,0 +1,8 @@
+﻿@model List<User>
+@{
+}
+
+@foreach (var item in Model)
+{
+    <h3>@item._id @item.CreateTime</h3>
+}
