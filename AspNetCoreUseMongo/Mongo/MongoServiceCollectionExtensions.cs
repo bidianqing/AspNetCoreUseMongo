@@ -19,7 +19,7 @@ namespace AspNetCoreUseMongo.Mongo
 
             services.AddOptions();
             services.Configure(setupAction);
-            services.AddScoped(typeof(MongoRepository<>));
+            services.AddSingleton(typeof(MongoRepository));
 
             return services;
         }

@@ -1,5 +1,6 @@
 ﻿using AspNetCoreUseMongo.Models;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 using System.Diagnostics;
 
 namespace AspNetCoreUseMongo.Controllers

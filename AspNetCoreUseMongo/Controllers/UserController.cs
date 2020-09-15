@@ -7,24 +7,19 @@ namespace AspNetCoreUseMongo.Controllers
 {
     public class UserController : Controller
     {
-        private readonly MongoRepository<User> _userMongoRepository;
-        public UserController(MongoRepository<User> userMongoRepository)
+        private readonly MongoRepository _mongoRepository;
+        public UserController(MongoRepository mongoRepository)
         {
-            _userMongoRepository = userMongoRepository;
+            _mongoRepository = mongoRepository;
         }
+
         public IActionResult Insert()
         {
-            _userMongoRepository.Insert(new Models.User
+            _mongoRepository.GetCollection<User>().InsertOne(new Models.User
             {
                 CreateTime = DateTime.Now
             });
             return Content("插入成功");
-        }
-
-        public IActionResult List()
-        {
-            var userList = _userMongoRepository.Find(new Models.User());
-            return View(userList);
         }
     }
 }

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AspNetCoreUseMongo.Mongo;
+﻿using AspNetCoreUseMongo.Mongo;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using MongoDB.Driver;
 
 namespace AspNetCoreUseMongo
 {
@@ -22,20 +20,25 @@ namespace AspNetCoreUseMongo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddControllersWithViews();
             services.AddMongo(options =>
             {
-                options.ConnectionString = "mongodb://localhost:27017";
+                options.ConnectionString = "mongodb+srv://dalton:iQing*8bdq@cluster0.sitlh.azure.mongodb.net/test";
                 options.DataBaseName = "oneaspnet";
             });
+
+            //services.AddSingleton<IMongoDatabase>(sp =>
+            //{
+            //    var mongoClient = new MongoClient("");
+            //    return mongoClient.GetDatabase("");
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -45,11 +48,13 @@ namespace AspNetCoreUseMongo
 
             app.UseStaticFiles();
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

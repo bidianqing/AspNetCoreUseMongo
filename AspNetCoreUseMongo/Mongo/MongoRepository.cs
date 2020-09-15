@@ -2,19 +2,20 @@
 using MongoDB.Driver;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 namespace AspNetCoreUseMongo.Mongo
 {
-    public class MongoRepository<T> where T : class, new()
+    public class MongoRepository
     {
         // https://mongodb.github.io/mongo-csharp-driver/2.0/reference/driver/connecting/
         private readonly MongoOptions _options;
-        private static IMongoClient _mongoClient;
-        private static IMongoDatabase _mongoDatabase;
+        private readonly IMongoClient _mongoClient;
+        private readonly IMongoDatabase _mongoDatabase;
         private static object _obj = new object();
 
-        private static readonly ConcurrentDictionary<RuntimeTypeHandle, IMongoCollection<T>> _mongoCollections = new ConcurrentDictionary<RuntimeTypeHandle, IMongoCollection<T>>();
+
+        private readonly ConcurrentDictionary<RuntimeTypeHandle, object> _mongoCollections = new ConcurrentDictionary<RuntimeTypeHandle, object>();
+
         public MongoRepository(IOptions<MongoOptions> optionsAccessor)
         {
             if (optionsAccessor == null)
@@ -37,24 +38,16 @@ namespace AspNetCoreUseMongo.Mongo
 
         }
 
-        public void Insert(T document)
+        public IMongoCollection<T> GetCollection<T>()
         {
-            this.GetCollection(document).InsertOne(document);
-        }
-        public List<T> Find(T document)
-        {
-            return this.GetCollection(document).AsQueryable().ToList();
-        }
-
-        private IMongoCollection<T> GetCollection(T document)
-        {
-            if (_mongoCollections.TryGetValue(document.GetType().TypeHandle, out IMongoCollection<T> collection))
+            if (_mongoCollections.TryGetValue(typeof(T).TypeHandle, out object collectionObject))
             {
-                return collection;
+                return collectionObject as IMongoCollection<T>;
             }
 
-            collection = _mongoDatabase.GetCollection<T>(typeof(T).Name);
-            _mongoCollections.TryAdd(document.GetType().TypeHandle, collection);
+            IMongoCollection<T> collection = _mongoDatabase.GetCollection<T>(typeof(T).Name);
+            _mongoCollections.TryAdd(typeof(T).TypeHandle, collection);
+
             return collection;
         }
     }
