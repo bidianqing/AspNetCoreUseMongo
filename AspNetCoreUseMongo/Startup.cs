@@ -23,7 +23,7 @@ namespace AspNetCoreUseMongo
             services.AddControllersWithViews();
             services.AddMongo(options =>
             {
-                options.ConnectionString = "mongodb+srv://dalton:iQing*8bdq@cluster0.sitlh.azure.mongodb.net/test";
+                options.ConnectionString = "mongodb://localhost:27017";
                 options.DataBaseName = "oneaspnet";
             });
 
